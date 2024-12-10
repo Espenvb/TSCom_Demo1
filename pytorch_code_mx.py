@@ -9,6 +9,8 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 
+
+#Import the microxscaling library
 from microxcaling import mx
 
 class Net(nn.Module):
