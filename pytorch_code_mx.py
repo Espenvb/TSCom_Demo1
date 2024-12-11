@@ -6,12 +6,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import matplotlib.pyplot as plt
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
-import numpy as np
 
-#Import the microxscaling library
 from microxcaling import mx
 
 class Net(nn.Module):
@@ -120,7 +117,6 @@ def main():
     # 'bfloat' is either 0 or 16, 'fp' can start at 7 (fixed exponent width of 5).
     #mx_specs['bfloat'] = 16
     mx_specs['fp'] = 16
-
     
     mx_precision = 'fp8_e4m3' # MX element format. Test also other formats, e.g. 'int4', 'fp6_e2m3'
 
@@ -177,7 +173,6 @@ def main():
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
-    
     for epoch in range(1, args.epochs + 1):
         train(args, model, device, train_loader, optimizer, epoch)
         test(model, device, test_loader)
@@ -185,8 +180,6 @@ def main():
 
     if args.save_model:
         torch.save(model.state_dict(), "fashion-mnist_cnn.pt")
-
-    train_and_plot(model, train_loader, test_loader, optimizer, F.nll_loss, args.epochs, device)
 
 
 if __name__ == '__main__':
