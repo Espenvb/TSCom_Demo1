@@ -244,6 +244,8 @@ def main():
     if args.save_model:
         torch.save(model.state_dict(), "fashion-mnist_cnn.pt")
 
+    train_and_plot(model, train_loader, test_loader, optimizer, F.nll_loss, args.epochs, device)
+
 
 if __name__ == '__main__':
     main()
