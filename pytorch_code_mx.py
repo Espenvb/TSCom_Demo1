@@ -6,9 +6,70 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import matplotlib.pyplot as plt
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
+import numpy as np
 
+
+def train_and_plot(model, train_loader, test_loader, optimizer, criterion, epochs, device):
+    # Lists to store metrics
+    train_accuracies = []
+    test_accuracies = []
+    
+    for epoch in range(epochs):
+        model.train()
+        correct = 0
+        total = 0
+        
+        # Training loop
+        for batch_idx, (data, target) in enumerate(train_loader):
+            data, target = data.to(device), target.to(device)
+            optimizer.zero_grad()
+            output = model(data)
+            loss = criterion(output, target)
+            loss.backward()
+            optimizer.step()
+            
+            # Calculate accuracy
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target.view_as(pred)).sum().item()
+            total += target.size(0)
+        
+        # Calculate epoch accuracy
+        train_acc = 100. * correct / total
+        train_accuracies.append(train_acc)
+        
+        # Evaluate on test set
+        model.eval()
+        test_correct = 0
+        test_total = 0
+        with torch.no_grad():
+            for data, target in test_loader:
+                data, target = data.to(device), target.to(device)
+                output = model(data)
+                pred = output.argmax(dim=1, keepdim=True)
+                test_correct += pred.eq(target.view_as(pred)).sum().item()
+                test_total += target.size(0)
+        
+        test_acc = 100. * test_correct / test_total
+        test_accuracies.append(test_acc)
+        
+        print(f'Epoch: {epoch}, Train Accuracy: {train_acc:.2f}%, Test Accuracy: {test_acc:.2f}%')
+
+    # Plot accuracies
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, epochs + 1), train_accuracies, label='Train Accuracy')
+    plt.plot(range(1, epochs + 1), test_accuracies, label='Test Accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy (%)')
+    plt.title('Training and Test Accuracy vs Epochs')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('accuracy_plot.png')
+    plt.close()
+
+    return train_accuracies, test_accuracies
 
 #Import the microxscaling library
 from microxcaling import mx
@@ -117,7 +178,7 @@ def main():
     # Elementwise operations can be performed with bfloat or fpX quantization.
     # Only one (bfloat or fp) can be non-zero. If both are 0, then 32-bit is used.
     # 'bfloat' is either 0 or 16, 'fp' can start at 7 (fixed exponent width of 5).
-    mx_specs['bfloat'] = 16
+    mx_specs['bfloat'] = 16                                                            
     # mx_specs['fp'] = 16
     
     mx_precision = 'fp8_e4m3' # MX element format. Test also other formats, e.g. 'int4', 'fp6_e2m3'
