@@ -118,7 +118,7 @@ def main():
     mx_specs['bfloat'] = 16
     #mx_specs['fp'] = 16
     
-    mx_precision = 'int8' # MX element format. Test also other formats, e.g. 'int4', 'fp6_e2m3'
+    mx_precision = 'fp6_e2m3' # MX element format. Test also other formats, e.g. 'int4', 'fp6_e2m3'
 
     # Forward pass
     mx_specs['w_elem_format'] = mx_precision        # MX format for weights 
