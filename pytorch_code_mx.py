@@ -115,8 +115,8 @@ def main():
     # Elementwise operations can be performed with bfloat or fpX quantization.
     # Only one (bfloat or fp) can be non-zero. If both are 0, then 32-bit is used.
     # 'bfloat' is either 0 or 16, 'fp' can start at 7 (fixed exponent width of 5).
-    mx_specs['bfloat'] = 16
-    #mx_specs['fp'] = 16
+    #mx_specs['bfloat'] = 16
+    mx_specs['fp'] = 16
     
     mx_precision = 'fp4_e2m1' # MX element format. Test also other formats, e.g. 'int4', 'fp6_e2m3'
 
